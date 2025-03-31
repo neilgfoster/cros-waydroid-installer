@@ -50,3 +50,6 @@ lxc start penguin
 echo_info '[+] Downloading script for next stage...'
 curl -L "${REPO_URL}/installer/02-setup_waydroid.sh" | lxc exec penguin -- sh -c 'cat > /02-setup_waydroid.sh'
 lxc exec penguin -- bash -eu /02-setup_waydroid.sh <&1
+
+# stop container
+lxc stop penguin
