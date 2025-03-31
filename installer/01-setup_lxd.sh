@@ -43,7 +43,7 @@ EOF
 
 # restart container to apply changes
 echo_info '[+] Restarting container to apply changes...'
-lxc stop penguin
+lxc stop penguin || true
 lxc start penguin
 
 # download and start stage 2
