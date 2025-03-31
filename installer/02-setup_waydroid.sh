@@ -44,6 +44,7 @@ done
 echo_info '[+] Installing Waydroid...'
 sudo apt install curl ca-certificates -y
 curl -s https://repo.waydro.id | sudo bash
+sudo ln -s true /bin/modprobe
 sudo apt install waydroid unzip -y
 
 cat <<EOT
