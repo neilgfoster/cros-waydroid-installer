@@ -26,7 +26,7 @@ if [ ! -f /etc/profile.d/PS1-termina.sh ]; then
 fi
 
 # check if we are running on custom kernel with binder support
-if ! grep -q 'CONFIG_ANDROID_BINDERFS=y'; then
+if ! zgrep -q 'CONFIG_ANDROID_BINDERFS=y' /proc/config.gz; then
   echo_error 'Please boot Termina VM with custom kernel!'
   exit 1
 fi
