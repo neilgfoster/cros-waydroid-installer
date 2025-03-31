@@ -89,7 +89,7 @@ case "${ANDROID_VERSION}" in
 esac
 
 echo_info '[+] Setting up Cage...'
-sudo apt install build-essential libx11-dev x11-utils cage -y
+sudo apt install build-essential libx11-dev x11-utils cage xwayland -y
 curl -L "${REPO_URL}/tools/cage-fullscreen.c" -o /tmp/cage-fullscreen.c
 sudo gcc -O3 /tmp/cage-fullscreen.c -lX11 -o /usr/bin/cage-fullscreen
 
