@@ -1,0 +1,37 @@
+#!/bin/bash -eu
+IPROUTE_CMD='ip route add default via 192.168.240.1'
+
+# setup binderfs/loopback devices if not already done
+if [ ! -c /dev/loop-control ]; then
+  sudo mount -t binder binder /dev/binderfs
+  sudo mknod /dev/loop-control c 10 237
+
+  for ((i=0; i<=15; i++)); do
+    sudo rm -f /dev/loop$i
+    sudo mknod /dev/loop$i b 7 $i
+  done
+
+  # apply changes
+  sudo systemctl restart waydroid-container
+fi
+
+# network fix for waydroid
+(
+  sudo sysctl -w net.ipv4.ip_forward=1
+
+  while ! (sudo waydroid shell -- sh -c "${IPROUTE_CMD} && echo DONE" | grep -q DONE); do
+    sleep 1
+  done
+) &
+
+# start waydroid with cage
+exec sommelier --direct-scale -X bash -eu <<'EOF'
+  export ORIGDISP=$DISPLAY
+  unset WAYLAND_DISPLAY
+
+  cage -- bash -c '
+    exec 2>&1
+    cage-fullscreen $(xwininfo -display $ORIGDISP -name "wlroots - X11-1" | grep -m1 -o "0x[0-9]\+")
+    waydroid show-full-ui
+  ' 2> /dev/null
+EOF
