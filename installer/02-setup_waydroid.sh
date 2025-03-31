@@ -44,7 +44,7 @@ done
 echo_info '[+] Installing Waydroid...'
 sudo apt install curl ca-certificates -y
 curl -s https://repo.waydro.id | sudo bash
-sudo ln -s true /bin/modprobe
+sudo ln -s true /bin/modprobe || true
 sudo apt install waydroid unzip -y
 
 cat <<EOT
@@ -74,8 +74,10 @@ case "${ANDROID_VERSION}" in
   sudo mkdir -p /etc/waydroid-extra/images
   cd /etc/waydroid-extra/images
 
-  echo_info '[+] Downloading Android 13 image...'
-  sudo curl -L "${ANDROID13_IMG[0]}" -o android13.zip
+  if [ ! -f android13.zip ]; then
+    echo_info '[+] Downloading Android 13 image...'
+    sudo curl -L "${ANDROID13_IMG[0]}" -o android13.zip
+  fi
 
   echo_info '[+] Verifying archive...'
   sha256sum -c - <<< "${ANDROID13_IMG[1]} android13.zip"
