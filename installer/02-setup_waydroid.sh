@@ -17,12 +17,11 @@ echo_intra() { echo -e "\e[1;34m${*}${RESET}" >&1; } # Use Blue for intrafunctio
 echo_out() { echo -e "\e[0;37m${*}${RESET}" >&1; } # Use Gray for program output.
 
 cat <<EOF
-
-============
+==============================================================================
 Waydroid installer for Crostini - Stage 2
 
 By SupeChicken666 - https://github.com/supechicken/ChromeOS-Waydroid-Installer
-============
+==============================================================================
 
 EOF
 
@@ -32,9 +31,9 @@ if [ -f /etc/profile.d/PS1-termina.sh ]; then
   exit 1
 fi
 
-echo '[+] Mounting Binder filesystem and creating loopback devices...'
+echo_info '[+] Mounting Binder filesystem and creating loopback devices...'
 sudo mkdir -p /dev/binderfs
-sudo mount -t binder binder /dev/binder
+sudo mount -t binder binder /dev/binderfs
 sudo mknod /dev/loop-control c 10 237
 
 for ((i=0; i<=15; i++)); do
@@ -42,7 +41,7 @@ for ((i=0; i<=15; i++)); do
   sudo mknod /dev/loop$i b 7 $i
 done
 
-echo '[+] Installing Waydroid...'
+echo_info '[+] Installing Waydroid...'
 sudo apt install curl ca-certificates -y
 curl -s https://repo.waydro.id | sudo bash
 sudo apt install waydroid unzip -y
@@ -59,41 +58,41 @@ EOT
 read -p 'Select an option [1|2]: ' ANDROID_VERSION
 
 while [[ "${ANDROID_VERSION}" != '1' && ${ANDROID_VERSION} != '2' ]]; do
-  echo_info 'Invalid input! Please try again.'
+  echo_error 'Invalid input! Please try again.'
   read -p 'Select an option [1|2]: ' ANDROID_VERSION
-fi
+done
 
 case "${ANDROID_VERSION}" in
 1)
-  echo -e "[+] Installing ${CYAN}Android 11${RESET}..."
+  echo_info "[+] Installing ${CYAN}Android 11${RESET}"
   sudo waydroid init -s VANILLA
 ;;
 2)
-  echo -e "[+] Installing ${CYAN}Android 13${RESET}..."
+  echo_info "[+] Installing ${CYAN}Android 13${RESET}"
 
   sudo mkdir -p /etc/waydroid-extra/images
   cd /etc/waydroid-extra/images
 
-  echo '[+] Downloading Android 13 image...'
+  echo_info '[+] Downloading Android 13 image...'
   sudo curl -L "${ANDROID13_IMG[0]}" -o android13.zip
 
-  echo '[+] Verifying archive...'
+  echo_info '[+] Verifying archive...'
   sha256sum -c - <<< "${ANDROID13_IMG[1]} android13.zip"
 
-  echo '[+] Decompressing Android 13 image...'
+  echo_info '[+] Decompressing Android 13 image...'
   sudo unzip android13.zip
 
-  echo '[+] Initializing system...'
+  echo_info '[+] Initializing system...'
   sudo waydroid init -f
 ;;
 esac
 
-echo '[+] Setting up Cage...'
+echo_info '[+] Setting up Cage...'
 sudo apt install build-essential libx11-dev x11-utils cage -y
 curl -L "${REPO_URL}/tools/cage-fullscreen.c" -o /tmp/cage-fullscreen.c
 sudo gcc -O3 /tmp/cage-fullscreen.c -lX11 -o /usr/bin/cage-fullscreen
 
-echo '[+] Installing scripts...'
+echo_info '[+] Installing scripts...'
 sudo curl -L "${REPO_URL}/scripts/start-waydroid" -o /usr/bin/start-waydroid
 sudo chmod +x /usr/bin/start-waydroid
 
@@ -116,3 +115,6 @@ If you need Google Apps/ARM compatibility layer, check https://github.com/casual
 ---
 Enjoy your Android installation!
 "
+
+# cleanup
+sudo rm -rf /02-setup_waydroid.sh

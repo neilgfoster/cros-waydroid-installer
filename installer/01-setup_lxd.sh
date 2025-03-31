@@ -1,6 +1,9 @@
 #!/bin/bash -eu
 
+CYAN='\e[1;36m'
 RESET='\e[0m'
+
+REPO_URL='https://github.com/supechicken/ChromeOS-Waydroid-Installer/raw/refs/heads/main'
 
 # Simplify colors and print errors to stderr (2).
 echo_error() { echo -e "\e[1;91m${*}${RESET}" >&2; } # Use Light Red for errors.
@@ -10,12 +13,11 @@ echo_intra() { echo -e "\e[1;34m${*}${RESET}" >&1; } # Use Blue for intrafunctio
 echo_out() { echo -e "\e[0;37m${*}${RESET}" >&1; } # Use Gray for program output.
 
 cat <<EOF
-
-============
+==============================================================================
 Waydroid installer for Crostini - Stage 1
 
 By SupeChicken666 - https://github.com/supechicken/ChromeOS-Waydroid-Installer
-============
+==============================================================================
 
 EOF
 
@@ -31,7 +33,7 @@ if ! zgrep -q 'CONFIG_ANDROID_BINDERFS=y' /proc/config.gz; then
   exit 1
 fi
 
-echo '[+] Setting up character/block device permission for the container...'
+echo_info '[+] Setting up character/block device permission for the container...'
 lxc config set penguin security.privileged true
 lxc config set penguin raw.lxc - <<EOF
   lxc.cgroup.devices.allow = c 241:* rwm
@@ -40,10 +42,11 @@ lxc config set penguin raw.lxc - <<EOF
 EOF
 
 # restart container to apply changes
-echo '[+] Restarting container to apply changes...'
+echo_info '[+] Restarting container to apply changes...'
 lxc stop penguin
 lxc start penguin
 
 # download and start stage 2
-echo '[+] Downloading script for next stage...'
-curl -L https://github.com/supechicken/ChromeOS-Waydroid-Installer | lxc exec penguin -- bash -eu
+echo_info '[+] Downloading script for next stage...'
+curl -L "${REPO_URL}/installer/02-setup_waydroid.sh" | lxc exec penguin -- sh -c 'cat > /02-setup_waydroid.sh'
+lxc exec penguin -- bash -eu /02-setup_waydroid.sh <&1
