@@ -57,8 +57,8 @@ cat <<EOT
 
 Select an Android version to install:
 
-  1. Android 11 (official image)
-  2. Android 13 (custom image by 10MinuteSteamDeckGamer)
+  1. Android 11    (official image)
+  2. Android 13    (unofficial image by 10MinuteSteamDeckGamer)
   3. Android 13 TV (unofficial image)
 
 EOT
