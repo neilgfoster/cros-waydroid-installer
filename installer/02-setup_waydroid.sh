@@ -101,6 +101,7 @@ case "${ANDROID_VERSION}" in
 
   echo_info '[+] Decompressing Android 13 image...'
   sudo unzip android13.zip
+  sudo rm android13.zip
 
   echo_info '[+] Initializing system...'
   sudo waydroid init -f
