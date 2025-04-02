@@ -24,6 +24,9 @@ fi
   done
 ) &
 
+# stop existing waydroid session
+waydroid session stop
+
 # start waydroid with cage
 exec sommelier --direct-scale -X bash -eu <<'EOF'
   export ORIGDISP=$DISPLAY
