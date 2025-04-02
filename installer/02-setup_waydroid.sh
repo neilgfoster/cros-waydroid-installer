@@ -4,9 +4,15 @@ CYAN='\e[1;36m'
 RESET='\e[0m'
 
 REPO_URL='https://github.com/supechicken/ChromeOS-Waydroid-Installer/raw/refs/heads/main'
+
 ANDROID13_IMG=(
   https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/releases/download/Android13/lineage-20-20250121-UNOFFICIAL-10MinuteSteamDeckGamer-Waydroid.zip
   833be8279a605285cc2b9c85425511a100320102c7ff8897f254fcfdf3929bb1
+)
+
+ANDROID13_TV_IMG=(
+  https://github.com/supechicken/waydroid-androidtv-build/releases/download/20250327/lineage-20.0-20250327-UNOFFICIAL-WaydroidATV_x86_64.zip
+  44d77c229f4737dfca6e360cdc06a6a2860717b504038b11b0216ed8a51f6a5a
 )
 
 # Simplify colors and print errors to stderr (2).
@@ -53,14 +59,15 @@ Select an Android version to install:
 
   1. Android 11 (official image)
   2. Android 13 (custom image by 10MinuteSteamDeckGamer)
+  3. Android 13 TV (unofficial image)
 
 EOT
 
-read -p 'Select an option [1|2]: ' ANDROID_VERSION
+read -p 'Select an option [1-3]: ' ANDROID_VERSION
 
-while [[ "${ANDROID_VERSION}" != '1' && ${ANDROID_VERSION} != '2' ]]; do
+while [[ "${ANDROID_VERSION}" != '1' && ${ANDROID_VERSION} != '2' && ${ANDROID_VERSION} != '3' ]]; do
   echo_error 'Invalid input! Please try again.'
-  read -p 'Select an option [1|2]: ' ANDROID_VERSION
+  read -p 'Select an option [1-3]: ' ANDROID_VERSION
 done
 
 case "${ANDROID_VERSION}" in
@@ -68,19 +75,29 @@ case "${ANDROID_VERSION}" in
   echo_info "[+] Installing ${CYAN}Android 11${RESET}"
   sudo waydroid init -s VANILLA
 ;;
-2)
-  echo_info "[+] Installing ${CYAN}Android 13${RESET}"
+2|3)
+  if [[ ${ANDROID_VERSION} == '2' ]]; then
+    ANDROID_VERSION='Android 13'
+    ANDROID_IMG_URL="${ANDROID13_IMG[0]}"
+    ANDROID_IMG_SHA="${ANDROID13_IMG[1]}"
+  else
+    ANDROID_VERSION='Android 13 TV'
+    ANDROID_IMG_URL="${ANDROID13_TV_IMG[0]}"
+    ANDROID_IMG_SHA="${ANDROID13_TV_IMG[1]}"
+  fi
+
+  echo_info "[+] Installing ${CYAN}${ANDROID_VERSION}${RESET}"
 
   sudo mkdir -p /etc/waydroid-extra/images
   cd /etc/waydroid-extra/images
 
   if [ ! -f android13.zip ]; then
     echo_info '[+] Downloading Android 13 image...'
-    sudo curl -L "${ANDROID13_IMG[0]}" -o android13.zip
+    sudo curl -L "${ANDROID_IMG_URL}" -o android13.zip
   fi
 
   echo_info '[+] Verifying archive...'
-  sha256sum -c - <<< "${ANDROID13_IMG[1]} android13.zip"
+  sha256sum -c - <<< "${ANDROID_IMG_SHA} android13.zip"
 
   echo_info '[+] Decompressing Android 13 image...'
   sudo unzip android13.zip
@@ -104,11 +121,11 @@ echo_intra "
 [Note]
 
 In order to make Waydroid work properly, you will need to boot the custom kernel
-mantually each time when ChromeOS restarts:
+manually each time when ChromeOS restarts:
 
   vmc start termina --enable-gpu --kernel /home/chronos/user/<PATH TO KERNEL>
 
-If you wish doing that automatically each startup, check https://github.com/supechicken/ChromeOS-AutoStart
+If you wish doing that automatically for each startup, check https://github.com/supechicken/ChromeOS-AutoStart
 If you need Google Apps/ARM compatibility layer, check https://github.com/casualsnek/waydroid_script
 
 **DO NOT** start Waydroid apps directly through ChromeOS launcher. Instead, start Waydroid with:
