@@ -10,9 +10,14 @@ ANDROID13_IMG=(
   833be8279a605285cc2b9c85425511a100320102c7ff8897f254fcfdf3929bb1
 )
 
-ANDROID13_TV_IMG=(
+ANDROID13_TV_IMG_X86=(
   https://github.com/supechicken/waydroid-androidtv-build/releases/download/20250327/lineage-20.0-20250327-UNOFFICIAL-WaydroidATV_x86_64.zip
   44d77c229f4737dfca6e360cdc06a6a2860717b504038b11b0216ed8a51f6a5a
+)
+
+ANDROID13_TV_IMG_ARM=(
+  https://github.com/supechicken/waydroid-androidtv-build/releases/download/20250225/lineage-20.0-20250226-UNOFFICIAL-WaydroidATV_arm64.zip
+  4ac4cc286ac3c0238735bbb4efad9b45c94ef80a93e3195c1e5f77a19216efd5
 )
 
 # Simplify colors and print errors to stderr (2).
@@ -58,7 +63,7 @@ cat <<EOT
 Select an Android version to install:
 
   1. Android 11    (official image)
-  2. Android 13    (unofficial image by 10MinuteSteamDeckGamer)
+  2. Android 13    (unofficial image by 10MinuteSteamDeckGamer) (x86-64 only)
   3. Android 13 TV (unofficial image)
 
 EOT
@@ -82,8 +87,16 @@ case "${ANDROID_VERSION}" in
     ANDROID_IMG_SHA="${ANDROID13_IMG[1]}"
   else
     ANDROID_VERSION='Android 13 TV'
-    ANDROID_IMG_URL="${ANDROID13_TV_IMG[0]}"
-    ANDROID_IMG_SHA="${ANDROID13_TV_IMG[1]}"
+    case "$(uname -m)" in
+    arm*|aarch64)
+      ANDROID_IMG_URL="${ANDROID13_TV_IMG_ARM[0]}"
+      ANDROID_IMG_SHA="${ANDROID13_TV_IMG_ARM[1]}"
+    ;;
+    x86_64)
+      ANDROID_IMG_URL="${ANDROID13_TV_IMG_X86[0]}"
+      ANDROID_IMG_SHA="${ANDROID13_TV_IMG_X86[1]}"
+    ;;
+    esac
   fi
 
   echo_info "[+] Installing ${CYAN}${ANDROID_VERSION}${RESET}"
