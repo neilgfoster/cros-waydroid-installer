@@ -5,11 +5,6 @@ RESET='\e[0m'
 
 REPO_URL='https://github.com/supechicken/ChromeOS-Waydroid-Installer/raw/refs/heads/main'
 
-ANDROID13_IMG=(
-  https://github.com/ryanrudolfoba/SteamOS-Waydroid-Installer/releases/download/Android13/lineage-20-20250121-UNOFFICIAL-10MinuteSteamDeckGamer-Waydroid.zip
-  833be8279a605285cc2b9c85425511a100320102c7ff8897f254fcfdf3929bb1
-)
-
 ANDROID13_TV_IMG_X86=(
   https://github.com/supechicken/waydroid-androidtv-build/releases/download/20250327/lineage-20.0-20250327-UNOFFICIAL-WaydroidATV_x86_64.zip
   44d77c229f4737dfca6e360cdc06a6a2860717b504038b11b0216ed8a51f6a5a
@@ -62,9 +57,8 @@ cat <<EOT
 
 Select an Android version to install:
 
-  1. Android 11    (official image)
-  2. Android 13    (unofficial image by 10MinuteSteamDeckGamer) (x86-64 only)
-  3. Android 13 TV (unofficial image)
+  1. Android 13
+  2. Android 13 TV
 
 EOT
 
@@ -77,27 +71,21 @@ done
 
 case "${ANDROID_VERSION}" in
 1)
-  echo_info "[+] Installing ${CYAN}Android 11${RESET}"
+  echo_info "[+] Installing ${CYAN}Android 13${RESET}"
   sudo waydroid init -s VANILLA
 ;;
-2|3)
-  if [[ ${ANDROID_VERSION} == '2' ]]; then
-    ANDROID_VERSION='Android 13'
-    ANDROID_IMG_URL="${ANDROID13_IMG[0]}"
-    ANDROID_IMG_SHA="${ANDROID13_IMG[1]}"
-  else
-    ANDROID_VERSION='Android 13 TV'
-    case "$(uname -m)" in
-    arm*|aarch64)
-      ANDROID_IMG_URL="${ANDROID13_TV_IMG_ARM[0]}"
-      ANDROID_IMG_SHA="${ANDROID13_TV_IMG_ARM[1]}"
-    ;;
-    x86_64)
-      ANDROID_IMG_URL="${ANDROID13_TV_IMG_X86[0]}"
-      ANDROID_IMG_SHA="${ANDROID13_TV_IMG_X86[1]}"
-    ;;
-    esac
-  fi
+2)
+  ANDROID_VERSION='Android 13 TV'
+  case "$(uname -m)" in
+  arm*|aarch64)
+    ANDROID_IMG_URL="${ANDROID13_TV_IMG_ARM[0]}"
+    ANDROID_IMG_SHA="${ANDROID13_TV_IMG_ARM[1]}"
+  ;;
+  x86_64)
+    ANDROID_IMG_URL="${ANDROID13_TV_IMG_X86[0]}"
+    ANDROID_IMG_SHA="${ANDROID13_TV_IMG_X86[1]}"
+  ;;
+  esac
 
   echo_info "[+] Installing ${CYAN}${ANDROID_VERSION}${RESET}"
 
