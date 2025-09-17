@@ -3,17 +3,7 @@
 CYAN='\e[1;36m'
 RESET='\e[0m'
 
-REPO_URL='https://github.com/supechicken/ChromeOS-Waydroid-Installer/raw/refs/heads/main'
-
-ANDROID13_TV_IMG_X86=(
-  https://github.com/supechicken/waydroid-androidtv-build/releases/download/20250327/lineage-20.0-20250327-UNOFFICIAL-WaydroidATV_x86_64.zip
-  44d77c229f4737dfca6e360cdc06a6a2860717b504038b11b0216ed8a51f6a5a
-)
-
-ANDROID13_TV_IMG_ARM=(
-  https://github.com/supechicken/waydroid-androidtv-build/releases/download/20250225/lineage-20.0-20250226-UNOFFICIAL-WaydroidATV_arm64.zip
-  4ac4cc286ac3c0238735bbb4efad9b45c94ef80a93e3195c1e5f77a19216efd5
-)
+REPO_URL='https://github.com/neilgfoster/cros-waydroid-installer/raw/refs/heads/main'
 
 # Simplify colors and print errors to stderr (2).
 echo_error() { echo -e "\e[1;91m${*}${RESET}" >&2; } # Use Light Red for errors.
@@ -58,7 +48,8 @@ cat <<EOT
 Select an Android version to install:
 
   1. Android 13
-  2. Android 13 TV
+  2. Android 13 FOSS
+  3. Android 13 GAPPS
 
 EOT
 
@@ -75,37 +66,12 @@ case "${ANDROID_VERSION}" in
   sudo waydroid init -s VANILLA
 ;;
 2)
-  ANDROID_VERSION='Android 13 TV'
-  case "$(uname -m)" in
-  arm*|aarch64)
-    ANDROID_IMG_URL="${ANDROID13_TV_IMG_ARM[0]}"
-    ANDROID_IMG_SHA="${ANDROID13_TV_IMG_ARM[1]}"
-  ;;
-  x86_64)
-    ANDROID_IMG_URL="${ANDROID13_TV_IMG_X86[0]}"
-    ANDROID_IMG_SHA="${ANDROID13_TV_IMG_X86[1]}"
-  ;;
-  esac
-
-  echo_info "[+] Installing ${CYAN}${ANDROID_VERSION}${RESET}"
-
-  sudo mkdir -p /etc/waydroid-extra/images
-  cd /etc/waydroid-extra/images
-
-  if [ ! -f android13.zip ]; then
-    echo_info '[+] Downloading Android 13 image...'
-    sudo curl -L "${ANDROID_IMG_URL}" -o android13.zip
-  fi
-
-  echo_info '[+] Verifying archive...'
-  sha256sum -c - <<< "${ANDROID_IMG_SHA} android13.zip"
-
-  echo_info '[+] Decompressing Android 13 image...'
-  sudo unzip android13.zip
-  sudo rm android13.zip
-
-  echo_info '[+] Initializing system...'
-  sudo waydroid init -f
+  echo_info "[+] Installing ${CYAN}Android 13 FOSS${RESET}"
+  sudo waydroid init -s FOSS
+;;
+3)
+  echo_info "[+] Installing ${CYAN}Android 13 GAPPS${RESET}"
+  sudo waydroid init -s GAPPS
 ;;
 esac
 

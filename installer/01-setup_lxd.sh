@@ -3,7 +3,7 @@
 CYAN='\e[1;36m'
 RESET='\e[0m'
 
-REPO_URL='https://github.com/supechicken/ChromeOS-Waydroid-Installer/raw/refs/heads/main'
+REPO_URL='https://github.com/neilgfoster/cros-waydroid-installer/raw/refs/heads/main'
 
 # Simplify colors and print errors to stderr (2).
 echo_error() { echo -e "\e[1;91m${*}${RESET}" >&2; } # Use Light Red for errors.
