@@ -28,7 +28,7 @@ fi
 waydroid session stop
 
 # start waydroid with cage
-exec sommelier --direct-scale -X bash -eu <<'EOF'
+sommelier --direct-scale -X bash -eu <<'EOF'
   export ORIGDISP=$DISPLAY
   unset WAYLAND_DISPLAY
 
