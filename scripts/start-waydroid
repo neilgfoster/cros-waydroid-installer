@@ -28,13 +28,15 @@ fi
 waydroid session stop
 
 # start waydroid with cage
-exec sommelier --direct-scale -X bash -eu <<'EOF'
+(
+sommelier --direct-scale -X bash -eu <<'EOF'
   export ORIGDISP=$DISPLAY
   unset WAYLAND_DISPLAY
 
   cage -- bash -c '
     exec 2>&1
     cage-fullscreen $(xwininfo -display $ORIGDISP -name "wlroots - X11-1" | grep -m1 -o "0x[0-9]\+")
-    waydroid show-full-ui
+    waydroid show-full-ui -q
   ' 2> /dev/null
 EOF
+) &
