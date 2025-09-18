@@ -36,7 +36,7 @@ sommelier --direct-scale -X bash -eu <<'EOF'
   cage -- bash -c '
     exec 2>&1
     cage-fullscreen $(xwininfo -display $ORIGDISP -name "wlroots - X11-1" | grep -m1 -o "0x[0-9]\+")
-    waydroid show-full-ui -q
+    waydroid -q show-full-ui
   ' 2> /dev/null
 EOF
 ) &
