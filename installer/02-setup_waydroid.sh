@@ -83,6 +83,8 @@ sudo gcc -O3 /tmp/cage-fullscreen.c -lX11 -o /usr/bin/cage-fullscreen
 echo_info '[+] Installing scripts...'
 sudo curl -L "${REPO_URL}/scripts/start-waydroid" -o /usr/bin/start-waydroid
 sudo chmod +x /usr/bin/start-waydroid
+sudo curl -L "${REPO_URL}/scripts/stop-waydroid" -o /usr/bin/stop-waydroid
+sudo chmod +x /usr/bin/stop-waydroid
 
 echo_success '[+] Installation completed!'
 echo_intra "
