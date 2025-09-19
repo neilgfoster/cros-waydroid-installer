@@ -1,6 +1,9 @@
 #!/bin/bash -eu
 IPROUTE_CMD='ip route add default via 192.168.240.1'
 
+# Cleanup waydroid shortcuts
+sudo rm -f ~/.local/share/applications/waydroid-*.desktop
+
 # setup binderfs/loopback devices if not already done
 if [ ! -c /dev/loop-control ]; then
   sudo mount -t binder binder /dev/binderfs
@@ -28,8 +31,7 @@ fi
 waydroid session stop
 
 # start waydroid with cage
-(
-sommelier --direct-scale -X bash -eu <<'EOF'
+exec sommelier --direct-scale -X bash -eu <<'EOF'
   export ORIGDISP=$DISPLAY
   unset WAYLAND_DISPLAY
 
@@ -39,4 +41,3 @@ sommelier --direct-scale -X bash -eu <<'EOF'
     waydroid -q show-full-ui
   ' 2> /dev/null
 EOF
-) &
