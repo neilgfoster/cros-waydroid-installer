@@ -1,2 +1,7 @@
 #!/bin/bash -eu
+
+# stop existing waydroid session
 waydroid session stop
+
+# Cleanup waydroid shortcuts
+sudo rm -f ~/.local/share/applications/waydroid-*.desktop
