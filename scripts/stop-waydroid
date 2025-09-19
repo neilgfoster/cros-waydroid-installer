@@ -5,3 +5,6 @@ waydroid session stop
 
 # Cleanup waydroid shortcuts
 sudo rm -f ~/.local/share/applications/*.desktop
+sudo rm -f /usr/share/applications/python*.desktop
+sudo rm -f /usr/share/applications/vim*.desktop
+sudo rm -f /usr/share/applications/waydroid*.desktop
