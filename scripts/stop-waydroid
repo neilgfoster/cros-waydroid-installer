@@ -4,4 +4,4 @@
 waydroid session stop
 
 # Cleanup waydroid shortcuts
-sudo rm -f ~/.local/share/applications/waydroid-*.desktop
+sudo rm -f ~/.local/share/applications/*.desktop
