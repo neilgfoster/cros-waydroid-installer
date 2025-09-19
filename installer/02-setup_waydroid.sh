@@ -3,6 +3,7 @@
 CYAN='\e[1;36m'
 RESET='\e[0m'
 
+# Set repository URL for downloading additional resources.
 REPO_URL='https://github.com/neilgfoster/cros-waydroid-installer/raw/refs/heads/main'
 
 # Simplify colors and print errors to stderr (2).
@@ -27,6 +28,7 @@ if [ -f /etc/profile.d/PS1-termina.sh ]; then
   exit 1
 fi
 
+# Mount binderfs and create loopback devices
 echo_info '[+] Mounting Binder filesystem and creating loopback devices...'
 sudo mkdir -p /dev/binderfs
 sudo mount -t binder binder /dev/binderfs
@@ -37,6 +39,7 @@ for ((i=0; i<=15; i++)); do
   sudo mknod /dev/loop$i b 7 $i
 done
 
+# Install Waydroid
 echo_info '[+] Installing Waydroid...'
 sudo apt install curl ca-certificates -y
 curl -s https://repo.waydro.id | sudo bash
@@ -47,31 +50,81 @@ cat <<EOT
 
 Select an Android version to install:
 
-  1. Android 13
-  2. Android 13 FOSS
-  3. Android 13 GAPPS
+  1) Default [VANILLA]
+  2) Default [GAPPS]
+  3) LineageOS 17.1 [Android 10] [VANILLA] [2022-07-23]
+  4) LineageOS 17.1 [Android 10] [GAPPS]   [2022-07-23]
+  5) LineageOS 18.1 [Android 11] [VANILLA] [2025-06-28]
+  6) LineageOS 18.1 [Android 11] [GAPPS]   [2025-06-28]
+  7) LineageOS 20.0 [Android 13] [VANILLA] [2025-08-23]
+  8) LineageOS 20.0 [Android 13] [GAPPS]   [2025-08-09]
 
 EOT
-
-read -p 'Select an option [1-3]: ' ANDROID_VERSION
-
-while [[ "${ANDROID_VERSION}" != '1' && ${ANDROID_VERSION} != '2' && ${ANDROID_VERSION} != '3' ]]; do
+read -p 'Select an option [1-8]: ' ANDROID_VERSION
+while [[ ! "${ANDROID_VERSION}" =~ ^[1-8]$ ]]; do
   echo_error 'Invalid input! Please try again.'
-  read -p 'Select an option [1-3]: ' ANDROID_VERSION
+  read -p 'Select an option [1-8]: ' ANDROID_VERSION
 done
 
+echo_info "[+] Installing Waydroid...${RESET}"
 case "${ANDROID_VERSION}" in
 1)
-  echo_info "[+] Installing ${CYAN}Android 13${RESET}"
   sudo waydroid init -s VANILLA
 ;;
 2)
-  echo_info "[+] Installing ${CYAN}Android 13 FOSS${RESET}"
-  sudo waydroid init -s FOSS
-;;
-3)
-  echo_info "[+] Installing ${CYAN}Android 13 GAPPS${RESET}"
   sudo waydroid init -s GAPPS
+;;
+[3-8])
+    # Map option to image download url
+    case "${ANDROID_VERSION}" in
+      3) 
+        VENDOR_IMAGE="lineage-17.1-20220723-MAINLINE-waydroid_x86_64-vendor.zip"
+        SYSTEM_IMAGE="lineage-17.1-20220723-VANILLA-waydroid_x86_64-system.zip"
+        ;;
+      4)
+        VENDOR_IMAGE="lineage-17.1-20220723-MAINLINE-waydroid_x86_64-vendor.zip"
+        SYSTEM_IMAGE="lineage-17.1-20220723-GAPPS-waydroid_x86_64-system.zip"
+        ;;
+      5)
+        VENDOR_IMAGE="lineage-18.1-20250628-MAINLINE-waydroid_x86_64-vendor.zip"
+        SYSTEM_IMAGE="lineage-18.1-20250628-VANILLA-waydroid_x86_64-system.zip"
+        ;;
+      6)
+        VENDOR_IMAGE="lineage-18.1-20250628-MAINLINE-waydroid_x86_64-vendor.zip"
+        SYSTEM_IMAGE="lineage-18.1-20250628-GAPPS-waydroid_x86_64-system.zip"
+        ;;
+      7)
+        VENDOR_IMAGE="lineage-20.0-20250809-MAINLINE-waydroid_x86_64-vendor.zip"
+        SYSTEM_IMAGE="lineage-20.0-20250823-VANILLA-waydroid_x86_64-system.zip"
+        ;;
+      8)
+        VENDOR_IMAGE="lineage-20.0-20250809-MAINLINE-waydroid_x86_64-vendor.zip"
+        SYSTEM_IMAGE="lineage-20.0-20250809-GAPPS-waydroid_x86_64-system.zip"
+        ;;
+    esac
+    VENDOR_IMAGE_URL="https://sourceforge.net/projects/waydroid/files/images/vendor/lineage/waydroid_x86_64/${VENDOR_IMAGE}"
+    SYSTEM_IMAGE_URL="https://sourceforge.net/projects/waydroid/files/images/system/lineage/waydroid_x86_64/${SYSTEM_IMAGE}"
+
+    # Create and clean image directory
+    sudo mkdir -p /etc/waydroid-extra/images
+    cd /etc/waydroid-extra/images
+    rm -rf *
+
+    # Download and extract vendor image
+    echo_info "[+] Downloading vendor image..."
+    sudo curl -L "${VENDOR_IMAGE_URL}" -o "${VENDOR_IMAGE}"
+    sudo unzip ${VENDOR_IMAGE}
+    rm -f ${VENDOR_IMAGE}
+
+    # Download and extract system image
+    echo_info "[+] Downloading system image..."
+    sudo curl -L "${SYSTEM_IMAGE_URL}" -o "${SYSTEM_IMAGE}"
+    sudo unzip ${SYSTEM_IMAGE}
+    rm -f ${SYSTEM_IMAGE}
+
+    # Initialize Waydroid with downloaded images
+    echo_info '[+] Initializing system...'
+    sudo waydroid init -f
 ;;
 esac
 
