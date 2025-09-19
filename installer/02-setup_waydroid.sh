@@ -102,25 +102,25 @@ case "${ANDROID_VERSION}" in
         SYSTEM_IMAGE="lineage-20.0-20250809-GAPPS-waydroid_x86_64-system.zip"
         ;;
     esac
-    VENDOR_IMAGE_URL="https://sourceforge.net/projects/waydroid/files/images/vendor/lineage/waydroid_x86_64/${VENDOR_IMAGE}"
+    VENDOR_IMAGE_URL="https://sourceforge.net/projects/waydroid/files/images/vendor/waydroid_x86_64/${VENDOR_IMAGE}"
     SYSTEM_IMAGE_URL="https://sourceforge.net/projects/waydroid/files/images/system/lineage/waydroid_x86_64/${SYSTEM_IMAGE}"
 
     # Create and clean image directory
     sudo mkdir -p /etc/waydroid-extra/images
     cd /etc/waydroid-extra/images
-    rm -rf *
+    sudo rm -rf *
 
     # Download and extract vendor image
     echo_info "[+] Downloading vendor image..."
     sudo curl -L "${VENDOR_IMAGE_URL}" -o "${VENDOR_IMAGE}"
     sudo unzip ${VENDOR_IMAGE}
-    rm -f ${VENDOR_IMAGE}
+    sudo rm -f ${VENDOR_IMAGE}
 
     # Download and extract system image
     echo_info "[+] Downloading system image..."
     sudo curl -L "${SYSTEM_IMAGE_URL}" -o "${SYSTEM_IMAGE}"
     sudo unzip ${SYSTEM_IMAGE}
-    rm -f ${SYSTEM_IMAGE}
+    sudo rm -f ${SYSTEM_IMAGE}
 
     # Initialize Waydroid with downloaded images
     echo_info '[+] Initializing system...'
